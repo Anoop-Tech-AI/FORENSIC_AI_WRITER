@@ -46,14 +46,7 @@ try {
 // Start the app
 const app = require('./app');
 
-// Add authentication routes
-try {
-    const authRoutes = require('../../routes/auth-final');
-    app.use('/api/auth', authRoutes);
-    console.log('Auth routes loaded');
-} catch (e) {
-    console.log('Auth routes failed:', e.message);
-}
+// Auth routes are handled within app.js
 
 // Add admin routes
 try {

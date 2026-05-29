@@ -9,9 +9,9 @@ router.route('/')
     .post(protect, checkRole(['legal_advisor', 'investigator']), createCase)
     .get(protect, checkRole(['legal_advisor', 'investigator']), getCases);
 
+router.get('/stats', protect, checkRole(['legal_advisor', 'investigator']), getStats);
+
 router.route('/:id')
     .delete(protect, checkRole(['legal_advisor', 'investigator']), deleteCase);
-
-router.get('/stats', protect, checkRole(['legal_advisor', 'investigator']), getStats);
 
 module.exports = router;

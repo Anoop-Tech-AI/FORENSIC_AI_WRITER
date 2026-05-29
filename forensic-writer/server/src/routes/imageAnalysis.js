@@ -53,7 +53,7 @@ const upload = multer({
 // ─────────────────────────────────────────────
 //  HuggingFace CONFIG
 // ─────────────────────────────────────────────
-const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
+const HF_TOKEN = process.env.HF_API_KEY;
 const HF_BASE  = "https://api-inference.huggingface.co/models";
 
 const MODELS = {

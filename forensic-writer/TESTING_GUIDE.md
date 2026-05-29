@@ -178,7 +178,7 @@ curl -X GET http://localhost:5000/api/ai/check/YOUR_CASE_ID \
 **Cause**: AI service not responding
 
 **Solution**:
-1. Check `HF_API_KEY` is set in `.env`
+1. Check `HF_API_KEY` is set in server `.env` file
 2. Check Hugging Face API status
 3. Try with simpler evidence first
 4. Check server logs for HF API errors

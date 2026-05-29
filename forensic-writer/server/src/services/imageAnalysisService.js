@@ -2,7 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
+const HF_TOKEN = process.env.HF_API_KEY;
 const HEADERS_BINARY = {
   Authorization: `Bearer ${HF_TOKEN}`,
   'Content-Type': 'application/octet-stream',

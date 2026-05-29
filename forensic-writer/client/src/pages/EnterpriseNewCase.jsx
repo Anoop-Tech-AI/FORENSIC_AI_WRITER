@@ -34,7 +34,13 @@ const EnterpriseNewCase = () => {
             });
 
             const createdCase = res.data.case || res.data;
-            navigate('../evidence', { state: { forensicCase: createdCase } });
+            console.log('Case created successfully:', createdCase);
+            
+            // Navigate to evidence page with case data
+            navigate('/investigator/evidence', { 
+                state: { forensicCase: createdCase },
+                replace: true
+            });
         } catch (err) {
             console.error('Case Registration Error:', err);
             setError(err.response?.data?.message || 'Failed to register case');

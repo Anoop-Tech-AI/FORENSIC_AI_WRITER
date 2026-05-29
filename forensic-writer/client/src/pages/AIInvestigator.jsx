@@ -1086,7 +1086,7 @@ const AIInvestigator = () => {
                                     ) : (
                                         <div className="text-center py-8 text-gray-500">
                                             <p className="text-sm">LLM report not available</p>
-                                            <p className="text-xs mt-1">Ensure HUGGINGFACE_API_KEY is set and LLaMA access is granted</p>
+                                            <p className="text-xs mt-1">Ensure HF_API_KEY is set in server .env and LLaMA access is granted</p>
                                         </div>
                                     )}
                                 </div>
