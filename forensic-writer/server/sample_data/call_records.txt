@@ -1,0 +1,124 @@
+CALL RECORD - SYSTEM LOG
+=====================
+
+Date: 2024-01-15
+Time: 08:30:15
+Phone Number: +1-555-0123
+Duration: 245 seconds
+Direction: Incoming
+Type: Business
+Status: Completed
+
+Date: 2024-01-15
+Time: 09:15:22
+Phone Number: +1-555-0456
+Duration: 180 seconds
+Direction: Outgoing
+Type: Business
+Status: Completed
+
+Date: 2024-01-15
+Time: 10:30:45
+Phone Number: +1-555-0789
+Duration: 90 seconds
+Direction: Incoming
+Type: Personal
+Status: Completed
+
+Date: 2024-01-15
+Time: 11:22:18
+Phone Number: +1-555-9999
+Duration: 15 seconds
+Direction: Incoming
+Type: Unknown
+Status: Failed
+
+Date: 2024-01-15
+Time: 11:22:35
+Phone Number: +1-555-9999
+Duration: 12 seconds
+Direction: Incoming
+Type: Unknown
+Status: Failed
+
+Date: 2024-01-15
+Time: 11:22:52
+Phone Number: +1-555-9999
+Duration: 8 seconds
+Direction: Incoming
+Type: Unknown
+Status: Failed
+
+Date: 2024-01-15
+Time: 12:45:30
+Phone Number: +1-555-0123
+Duration: 420 seconds
+Direction: Outgoing
+Type: Business
+Status: Completed
+
+Date: 2024-01-15
+Time: 14:20:15
+Phone Number: +1-555-1111
+Duration: 300 seconds
+Direction: Incoming
+Type: Business
+Status: Completed
+
+Date: 2024-01-15
+Time: 15:30:45
+Phone Number: +1-555-0456
+Duration: 150 seconds
+Direction: Outgoing
+Type: Business
+Status: Completed
+
+Date: 2024-01-15
+Time: 16:15:22
+Phone Number: +1-555-2222
+Duration: 75 seconds
+Direction: Incoming
+Type: Personal
+Status: Completed
+
+Date: 2024-01-15
+Time: 22:30:15
+Phone Number: +1-555-3333
+Duration: 45 seconds
+Direction: Incoming
+Type: Unknown
+Status: Completed
+
+Date: 2024-01-15
+Time: 22:45:30
+Phone Number: +1-555-3333
+Duration: 120 seconds
+Direction: Incoming
+Type: Unknown
+Status: Completed
+
+Date: 2024-01-15
+Time: 23:15:45
+Phone Number: +1-555-4444
+Duration: 30 seconds
+Direction: Incoming
+Type: Unknown
+Status: Failed
+
+Date: 2024-01-15
+Time: 23:30:00
+Phone Number: +1-555-5555
+Duration: 600 seconds
+Direction: Outgoing
+Type: Unknown
+Status: Completed
+
+SUMMARY STATISTICS:
+- Total calls: 13
+- Business calls: 5
+- Personal calls: 2
+- Unknown calls: 6
+- Failed calls: 4
+- Average duration: 189 seconds
+- Longest call: 600 seconds
+- Shortest call: 8 seconds

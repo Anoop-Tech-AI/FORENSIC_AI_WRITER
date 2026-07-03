@@ -1,0 +1,124 @@
+name: Forensic Writer CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, prepare-forensic-writer-production]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1: Lint & Test Backend
+  # ─────────────────────────────────────────────
+  backend-check:
+    name: Backend Lint & Validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: forensic-writer/server
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: forensic-writer/server/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: npm ci --prefer-offline
+
+      - name: Validate Backend Can Load (syntax check)
+        run: node --check src/server.js && node --check src/app.js
+
+      - name: Check for Critical Missing Modules
+        run: |
+          node -e "require('./src/services/pdfReportService')"
+          node -e "require('./src/controllers/reportController')"
+          node -e "require('./src/controllers/caseController')"
+          node -e "require('./src/middleware/authRole')"
+
+  # ─────────────────────────────────────────────
+  # JOB 2: Build Frontend
+  # ─────────────────────────────────────────────
+  frontend-build:
+    name: Frontend Build & Validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: forensic-writer/client
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: forensic-writer/client/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: npm ci --prefer-offline
+
+      - name: Build Frontend (Production)
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: forensic-writer/client/dist
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # JOB 3: Deploy Frontend to Vercel
+  # ─────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend → Vercel
+    runs-on: ubuntu-latest
+    needs: frontend-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: forensic-writer/client/dist
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: forensic-writer/client
+          vercel-args: '--prod'
+
+  # ─────────────────────────────────────────────
+  # JOB 4: Deploy Backend to Render (webhook)
+  # ─────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend → Render
+    runs-on: ubuntu-latest
+    needs: backend-check
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Trigger Render Deploy via Webhook
+        run: |
+          curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            --fail-with-body
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}

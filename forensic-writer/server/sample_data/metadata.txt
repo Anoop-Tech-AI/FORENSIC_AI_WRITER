@@ -1,0 +1,72 @@
+FILE METADATA REPORT
+==================
+
+File Name: confidential_project_plan.pdf
+Created: 2024-01-10 14:30:15
+Modified: 2024-01-14 16:45:22
+Accessed: 2024-01-15 09:15:33
+Size: 2048576 bytes
+Type: PDF Document
+Permissions: Read-only for users, Full access for admin
+
+File Name: system_backup.zip
+Created: 2024-01-08 02:00:00
+Modified: 2024-01-08 02:30:45
+Accessed: 2024-01-15 22:30:15
+Size: 1073741824 bytes
+Type: Compressed Archive
+Permissions: Admin access only
+
+File Name: employee_database.csv
+Created: 2024-01-05 11:20:10
+Modified: 2024-01-12 15:30:22
+Accessed: 2024-01-15 11:45:33
+Size: 524288 bytes
+Type: CSV Data
+Permissions: HR and Admin access
+
+File Name: security_config.xml
+Created: 2024-01-01 09:00:00
+Modified: 2024-01-13 17:20:15
+Accessed: 2024-01-15 14:30:45
+Size: 8192 bytes
+Type: Configuration File
+Permissions: Admin access only
+
+File Name: audit_log_2024.txt
+Created: 2024-01-01 00:00:00
+Modified: 2024-01-15 23:59:59
+Accessed: 2024-01-15 23:45:22
+Size: 10485760 bytes
+Type: Log File
+Permissions: Read-only for all users
+
+File Name: financial_report_q1.xlsx
+Created: 2024-01-15 10:00:00
+Modified: 2024-01-15 16:30:45
+Accessed: 2024-01-15 17:15:33
+Size: 3145728 bytes
+Type: Excel Spreadsheet
+Permissions: Finance and Admin access
+
+File Name: customer_data.db
+Created: 2023-12-15 14:20:15
+Modified: 2024-01-14 20:30:22
+Accessed: 2024-01-15 12:00:00
+Size: 52428800 bytes
+Type: Database File
+Permissions: Sales and Admin access
+
+File Name: source_code.zip
+Created: 2024-01-12 16:45:30
+Modified: 2024-01-14 11:20:15
+Accessed: 2024-01-15 03:30:45
+Size: 20971520 bytes
+Type: Compressed Archive
+Permissions: Development and Admin access
+
+SECURITY NOTES:
+- Multiple files accessed during unusual hours (03:30, 22:30)
+- Large database files accessed frequently
+- Configuration file modified recently
+- Archive files showing admin-only access patterns
