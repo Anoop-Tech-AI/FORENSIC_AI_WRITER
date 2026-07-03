@@ -1,0 +1,42 @@
+services:
+  # Node.js Backend API
+  - type: web
+    name: forensic-writer-backend
+    runtime: node
+    repo: https://github.com/YOUR_GITHUB_USERNAME/FORENSIC_AI_WRITER
+    rootDir: forensic-writer/server
+    buildCommand: npm install
+    startCommand: node src/server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: HF_API_KEY
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: AI_SERVER_URL
+        sync: false
+
+  # Python AI Server Microservice
+  - type: web
+    name: forensic-writer-ai-server
+    runtime: python
+    repo: https://github.com/YOUR_GITHUB_USERNAME/FORENSIC_AI_WRITER
+    rootDir: forensic-writer/ai-server
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
