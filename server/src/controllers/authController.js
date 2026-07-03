@@ -4,6 +4,12 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const emailService = require('../services/emailService');
 
+// Validate JWT_SECRET in production
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set in production');
+    process.exit(1);
+}
+
 // Generate OTP
 const generateOTP = () => {
     return crypto.randomInt(100000, 999999).toString();
