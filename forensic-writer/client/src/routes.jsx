@@ -93,7 +93,7 @@ const RoutesConfig = ({ routeKey }) => {
                     </ProtectedRoute>
                 } />
 
-                {/* 🎯 Legal Routes (View Only) */}
+                {/* 🎯 Legal Routes (View Only - Reports & Cases) */}
                 <Route path="/legal/*" element={
                     <ProtectedRoute allowedRoles={['legal_advisor']}>
                         <Routes>
@@ -101,7 +101,6 @@ const RoutesConfig = ({ routeKey }) => {
                             <Route path="dashboard" element={<LayoutWrapper><LegalDashboard /></LayoutWrapper>} />
                             <Route path="cases" element={<LayoutWrapper><Cases /></LayoutWrapper>} />
                             <Route path="cases/:id" element={<LayoutWrapper><CaseDetails /></LayoutWrapper>} />
-                            <Route path="ai-analysis" element={<LayoutWrapper><AIInvestigator /></LayoutWrapper>} />
                             <Route path="reports" element={<LayoutWrapper><Reports /></LayoutWrapper>} />
                             <Route path="messages" element={<LayoutWrapper><Messages /></LayoutWrapper>} />
                             <Route path="history" element={<LayoutWrapper><History /></LayoutWrapper>} />

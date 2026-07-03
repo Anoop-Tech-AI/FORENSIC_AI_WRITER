@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const { protect } = require('../middleware/authMiddleware');
+const { checkRole } = require('../middleware/authRole');
 
 // Delete all users endpoint
-router.delete('/delete-all-users', async (req, res) => {
+router.delete('/delete-all-users', protect, checkRole(['admin']), async (req, res) => {
   try {
     console.log('Deleting all users from database...');
     

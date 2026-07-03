@@ -5,13 +5,13 @@ const { protect } = require('../middleware/authMiddleware');
 const { requireAIAccess } = require('../utils/rbac');
 const { processAICommand } = require('../services/aiCommandParser');
 
-// AI routes restricted to forensic_investigator and admin only
+// AI routes - forensic analysis restricted to investigator only
 router.get('/analyze/:caseId', protect, requireAIAccess, analyzeCase);
 router.post('/analyze/:caseId', protect, requireAIAccess, analyzeCase);
 router.get('/check/:caseId', protect, requireAIAccess, checkCaseEvidence);
 
-// Real-time Chatbot Command endpoint - restricted to forensic_investigator and admin only
-router.post('/chat', protect, requireAIAccess, async (req, res) => {
+// AI Chatbot - open to ALL authenticated users (admin, investigator, legal_advisor)
+router.post('/chat', protect, async (req, res) => {
     try {
         const user = req.user;
         

@@ -110,13 +110,114 @@ const updateProfile = async (req, res) => {
     }
 };
 
-// Stubs for missing functions to allow server to start
-const createUser = async (req, res) => res.status(501).json({ message: 'Not implemented' });
-const updateUserRole = async (req, res) => res.status(501).json({ message: 'Not implemented' });
-const deleteUser = async (req, res) => res.status(501).json({ message: 'Not implemented' });
-const uploadAvatar = async (req, res) => res.status(501).json({ message: 'Not implemented' });
-const setPresetAvatar = async (req, res) => res.status(501).json({ message: 'Not implemented' });
-const getRoles = async (req, res) => res.status(200).json(['system_admin', 'investigator', 'legal_advisor']);
+// Implement missing user management controller methods
+const createUser = async (req, res) => {
+    try {
+        const { username, email, password, role, name } = req.body;
+        if (!username || !email || !password || !role) {
+            return res.status(400).json({ message: 'Please provide all required fields' });
+        }
+        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        const user = await User.create({
+            username,
+            name: name || username,
+            email,
+            password: hashedPassword,
+            role,
+            isVerified: true
+        });
+        
+        res.status(201).json({
+            message: 'User created successfully',
+            user: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                name: user.name
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const updateUserRole = async (req, res) => {
+    try {
+        const { role } = req.body;
+        if (!role) return res.status(400).json({ message: 'Role is required' });
+        
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        user.role = role;
+        await user.save();
+        
+        res.json({ message: 'Role updated successfully', role: user.role });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        await user.deleteOne();
+        res.json({ message: 'User deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const uploadAvatar = async (req, res) => {
+    upload(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: 'Avatar upload failed', error: err.message });
+        }
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        try {
+            const user = await User.findById(req.user._id);
+            if (!user) return res.status(404).json({ message: 'User not found' });
+            
+            user.avatar = `/uploads/avatars/${req.file.filename}`;
+            await user.save();
+            
+            res.json({ message: 'Avatar uploaded successfully', avatar: user.avatar });
+        } catch (dbErr) {
+            res.status(500).json({ message: 'Server error', error: dbErr.message });
+        }
+    });
+};
+
+const setPresetAvatar = async (req, res) => {
+    try {
+        const { avatarKey } = req.body;
+        if (!avatarKey) return res.status(400).json({ message: 'Avatar key is required' });
+        
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        user.avatar = avatarKey;
+        await user.save();
+        
+        res.json({ message: 'Avatar updated successfully', avatar: user.avatar });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const getRoles = async (req, res) => res.status(200).json(['admin', 'investigator', 'legal_advisor']);
 
 module.exports = {
     getUsers,

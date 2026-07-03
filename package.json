@@ -7,5 +7,8 @@
     "install-all": "npm run install-all --prefix forensic-writer",
     "server": "npm run server --prefix forensic-writer",
     "client": "npm run client --prefix forensic-writer"
+  },
+  "dependencies": {
+    "helmet": "^8.2.0"
   }
 }

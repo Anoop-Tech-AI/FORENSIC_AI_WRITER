@@ -47,8 +47,8 @@ router.get('/case/:caseId', protect, async (req, res) => {
     }
 });
 
-// Upload evidence to a case
-router.post('/:caseId', protect, checkRole(['legal_advisor', 'forensic_investigator']), upload.array('evidence', 10), async (req, res) => {
+// Upload evidence to a case (investigator only)
+router.post('/:caseId', protect, checkRole(['investigator']), upload.array('evidence', 10), async (req, res) => {
     try {
         const { caseId } = req.params;
         console.log('[UPLOAD] Uploading to case:', caseId);

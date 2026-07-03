@@ -3,12 +3,12 @@
  * Defines permissions and access control for Forensic Writer
  */
 
-// Role definitions
+// Role definitions — must match MongoDB User model enum exactly
 const ROLES = {
-    ADMIN: 'system_admin',
-    ADMIN_SHORT: 'admin',
-    FORENSIC_INVESTIGATOR: 'forensic_investigator', 
-    INVESTIGATOR_SHORT: 'investigator',
+    ADMIN: 'admin',
+    ADMIN_SHORT: 'admin',         // unified: both map to 'admin'
+    FORENSIC_INVESTIGATOR: 'investigator', 
+    INVESTIGATOR_SHORT: 'investigator',   // unified: both map to 'investigator'
     LEGAL_ADVISOR: 'legal_advisor',
     REPORTER: 'reporter'
 };
@@ -67,12 +67,9 @@ const ROLE_PERMISSIONS = {
         PERMISSIONS.VIEW_EVIDENCE,
         PERMISSIONS.DELETE_EVIDENCE,
         
-        // AI Investigation
-        PERMISSIONS.ACCESS_AI,
-        PERMISSIONS.RUN_AI_ANALYSIS,
+        // AI Investigation - System Admin cannot access AI forensic analysis
         
-        // Report Management
-        PERMISSIONS.GENERATE_REPORTS,
+        // Report Management - Admin can view/download/delete reports but not generate them
         PERMISSIONS.VIEW_REPORTS,
         PERMISSIONS.DOWNLOAD_REPORTS,
         PERMISSIONS.DELETE_REPORTS,
@@ -87,8 +84,7 @@ const ROLE_PERMISSIONS = {
         PERMISSIONS.CREATE_USER, PERMISSIONS.DELETE_USER, PERMISSIONS.ASSIGN_ROLES,
         PERMISSIONS.CREATE_CASE, PERMISSIONS.VIEW_ALL_CASES, PERMISSIONS.EDIT_CASE, PERMISSIONS.DELETE_CASE,
         PERMISSIONS.UPLOAD_EVIDENCE, PERMISSIONS.VIEW_EVIDENCE, PERMISSIONS.DELETE_EVIDENCE,
-        PERMISSIONS.ACCESS_AI, PERMISSIONS.RUN_AI_ANALYSIS,
-        PERMISSIONS.GENERATE_REPORTS, PERMISSIONS.VIEW_REPORTS, PERMISSIONS.DOWNLOAD_REPORTS, PERMISSIONS.DELETE_REPORTS,
+        PERMISSIONS.VIEW_REPORTS, PERMISSIONS.DOWNLOAD_REPORTS, PERMISSIONS.DELETE_REPORTS,
         PERMISSIONS.VIEW_SYSTEM_LOGS, PERMISSIONS.ACCESS_ADMIN_PANEL, PERMISSIONS.ADD_LEGAL_COMMENTS
     ],
     
@@ -121,12 +117,8 @@ const ROLE_PERMISSIONS = {
     
     [ROLES.LEGAL_ADVISOR]: [
         PERMISSIONS.VIEW_ALL_CASES,
-        PERMISSIONS.CREATE_CASE,
-        PERMISSIONS.EDIT_CASE,
         PERMISSIONS.VIEW_EVIDENCE,
-        PERMISSIONS.UPLOAD_EVIDENCE,
         PERMISSIONS.VIEW_REPORTS,
-        PERMISSIONS.GENERATE_REPORTS,
         PERMISSIONS.DOWNLOAD_REPORTS,
         PERMISSIONS.ADD_LEGAL_COMMENTS
     ],
@@ -255,7 +247,7 @@ const requireAIAccess = (req, res, next) => {
     if (!hasPermission(req.user, PERMISSIONS.ACCESS_AI)) {
         return res.status(403).json({
             message: 'Access Denied: You do not have permission to use AI Investigation.',
-            requiredRole: 'FORENSIC_INVESTIGATOR or ADMIN',
+            requiredRole: 'FORENSIC_INVESTIGATOR',
             currentRole: req.user?.role || 'None'
         });
     }
@@ -266,7 +258,8 @@ const requireAIAccess = (req, res, next) => {
  * Middleware to check admin access
  */
 const requireAdmin = (req, res, next) => {
-    if (!hasPermission(req.user, PERMISSIONS.ACCESS_ADMIN_PANEL)) {
+    const allowedRoles = [ROLES.ADMIN, ROLES.ADMIN_SHORT];
+    if (!allowedRoles.includes(req.user?.role)) {
         return res.status(403).json({
             message: 'Access Denied: Admin access required.',
             currentRole: req.user?.role || 'None'
@@ -279,7 +272,8 @@ const requireAdmin = (req, res, next) => {
  * Middleware to check legal advisor permissions
  */
 const requireLegalAdvisor = (req, res, next) => {
-    if (req.user?.role !== ROLES.LEGAL_ADVISOR && req.user?.role !== ROLES.ADMIN) {
+    const allowedRoles = [ROLES.LEGAL_ADVISOR, ROLES.ADMIN, ROLES.ADMIN_SHORT];
+    if (!allowedRoles.includes(req.user?.role)) {
         return res.status(403).json({
             message: 'Access Denied: Legal Advisor access required.',
             currentRole: req.user?.role || 'None'
@@ -292,7 +286,7 @@ const requireLegalAdvisor = (req, res, next) => {
  * Middleware to check forensic investigator permissions
  */
 const requireForensicInvestigator = (req, res, next) => {
-    const allowedRoles = [ROLES.FORENSIC_INVESTIGATOR, ROLES.ADMIN];
+    const allowedRoles = [ROLES.FORENSIC_INVESTIGATOR, ROLES.INVESTIGATOR_SHORT];
     if (!allowedRoles.includes(req.user?.role)) {
         return res.status(403).json({
             message: 'Access Denied: Forensic Investigator access required.',

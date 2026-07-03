@@ -123,4 +123,100 @@ const deleteCase = async (req, res) => {
     }
 };
 
-module.exports = { createCase, getCases, getStats, deleteCase };
+const getCaseById = async (req, res) => {
+    try {
+        console.log("Route hit:", req.originalUrl);
+        const query = req.params.id.startsWith('FW-') 
+            ? { caseId: req.params.id } 
+            : { _id: req.params.id };
+            
+        const caseData = await Case.findOne(query).populate('evidence');
+        if (!caseData) {
+            return res.status(404).json({ message: 'Case not found' });
+        }
+        res.json(caseData);
+    } catch (error) {
+        console.error("ERROR:", error.message);
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+};
+
+const approveCase = async (req, res) => {
+    try {
+        const caseData = await Case.findByIdAndUpdate(
+            req.params.id,
+            { status: 'approved' },
+            { new: true }
+        ).populate('evidence');
+
+        if (!caseData) {
+            return res.status(404).json({ message: 'Case not found' });
+        }
+
+        // Notify Creator
+        const io = req.app.get('io');
+        if (io) {
+            const { sendNotificationToUser } = require('../config/socket');
+            const notification = {
+                userId: caseData.createdBy,
+                title: 'Case Approved',
+                message: `Your case ${caseData.caseId} has been approved by admin.`,
+                type: 'case',
+                senderId: req.user._id,
+                senderName: req.user.username,
+                senderRole: req.user.role,
+                link: `/investigator/cases/${caseData._id}`
+            };
+            await Notification.create(notification);
+            sendNotificationToUser(io, caseData.createdBy, notification);
+        }
+
+        res.json({ success: true, case: caseData });
+    } catch (error) {
+        console.error("ERROR:", error.message);
+        res.status(500).json({ message: 'Failed to approve case', error: error.message });
+    }
+};
+
+const rejectCase = async (req, res) => {
+    try {
+        const { remarks } = req.body;
+        const caseData = await Case.findByIdAndUpdate(
+            req.params.id,
+            { status: 'rejected', remarks: remarks || 'No remarks provided' },
+            { new: true }
+        ).populate('evidence');
+
+        if (!caseData) {
+            return res.status(404).json({ message: 'Case not found' });
+        }
+
+        // Notify Creator
+        const io = req.app.get('io');
+        if (io) {
+            const { sendNotificationToUser } = require('../config/socket');
+            const notification = {
+                userId: caseData.createdBy,
+                title: 'Case Rejected',
+                message: `Your case ${caseData.caseId} was rejected. Remarks: ${remarks}`,
+                type: 'remark',
+                senderId: req.user._id,
+                senderName: req.user.username,
+                senderRole: req.user.role,
+                link: `/investigator/cases`
+            };
+            await Notification.create(notification);
+            sendNotificationToUser(io, caseData.createdBy, notification);
+        }
+
+        res.json({ success: true, case: caseData });
+    } catch (error) {
+        console.error("ERROR:", error.message);
+        res.status(500).json({ message: 'Failed to reject case', error: error.message });
+    }
+};
+
+module.exports = { createCase, getCases, getStats, deleteCase, getCaseById, approveCase, rejectCase };

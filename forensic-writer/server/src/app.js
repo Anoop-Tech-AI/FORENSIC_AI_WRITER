@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const caseAssignmentRoutes = require('./routes/caseAssignmentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const { router: messageRoutes } = require('./routes/simpleMessageRoutes');
 const imageAnalysisRoutes = require('./routes/imageAnalysis');
 
@@ -20,12 +21,28 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Dynamic CORS: allow frontend URL from env + localhost fallbacks
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://forensic-writer-veritas.vercel.app'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g., curl, Postman, mobile)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS blocked: ${origin}`));
+    },
     credentials: true
 }));
 app.use(helmet({
-    crossOriginResourcePolicy: false, // Allow serving uploaded images
+    crossOriginResourcePolicy: false,
 }));
 app.use(morgan('dev'));
 
@@ -43,6 +60,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/case-assignments', caseAssignmentRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
     res.send('Forensic Writer API is running...');

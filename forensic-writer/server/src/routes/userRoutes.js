@@ -12,15 +12,20 @@ const {
     setPresetAvatar, 
     getRoles 
 } = require('../controllers/userController');
-// Public routes (no authentication)
-router.get('/', getAllUsers);
-router.get('/me', getProfile);
-router.put('/profile', updateProfile);
-router.put('/avatar/preset', setPresetAvatar);
-router.post('/avatar/upload', uploadAvatar);
-router.post('/', createUser);
-router.put('/:id/role', updateUserRole);
-router.delete('/:id', deleteUser);
-router.get('/roles', getRoles);
+const { protect } = require('../middleware/authMiddleware');
+const { checkRole } = require('../middleware/authRole');
+
+// User profile endpoints (restricted to authenticated users)
+router.get('/me', protect, getProfile);
+router.put('/profile', protect, updateProfile);
+router.put('/avatar/preset', protect, setPresetAvatar);
+router.post('/avatar/upload', protect, uploadAvatar);
+router.get('/roles', protect, getRoles);
+
+// Admin-only user management endpoints
+router.get('/', protect, checkRole(['admin']), getAllUsers);
+router.post('/', protect, checkRole(['admin']), createUser);
+router.put('/:id/role', protect, checkRole(['admin']), updateUserRole);
+router.delete('/:id', protect, checkRole(['admin']), deleteUser);
 
 module.exports = router;
