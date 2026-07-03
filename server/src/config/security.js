@@ -43,7 +43,7 @@ const SECURITY_CONFIG = {
   // CORS settings
   CORS: {
     ALLOWED_ORIGINS: process.env.NODE_ENV === 'production' 
-      ? ['https://your-production-domain.com']
+      ? [process.env.CLIENT_URL || 'https://forensic-ai-writer.vercel.app']
       : ['http://localhost:5173', 'http://localhost:3000'],
     ALLOWED_METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     ALLOWED_HEADERS: ['Content-Type', 'Authorization'],

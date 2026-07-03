@@ -6,8 +6,7 @@ import axios from 'axios';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useSocket } from '../hooks/useSocket';
 import { useAuth } from '../context/AuthContext';
-
-const API_URL = `http://${window.location.hostname}:5000/api`;
+import { API_URL } from '../config/api';
 
 const getRoleBadge = (role) => {
     const map = {
