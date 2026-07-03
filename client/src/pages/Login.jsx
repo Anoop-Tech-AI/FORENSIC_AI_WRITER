@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Lock, Mail, Shield, ChevronRight, Eye, EyeOff, Activity } from 'lucide-react';
 import { NetworkBackground } from '../components/NetworkBackground';
 import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../config/api';
+import api from '../config/axios';
 
 const Login = () => {
   const { login } = useAuth();
@@ -25,28 +25,19 @@ const Login = () => {
     setIsError(false);
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
+      const response = await api.post('/auth/login', formData);
+      const data = response.data;
 
-      if (response.ok) {
-        setMessage('Login successful! Redirecting...');
-        login(data.user, data.token);
-        setTimeout(() => {
-          if (data.user.role === 'admin') navigate('/admin/dashboard');
-          else if (data.user.role === 'investigator') navigate('/investigator/dashboard');
-          else if (data.user.role === 'legal_advisor') navigate('/legal/dashboard');
-        }, 1200);
-      } else {
-        setIsError(true);
-        setMessage(data.message || 'Login failed');
-      }
-    } catch {
+      setMessage('Login successful! Redirecting...');
+      login(data.user, data.token);
+      setTimeout(() => {
+        if (data.user.role === 'admin') navigate('/admin/dashboard');
+        else if (data.user.role === 'investigator') navigate('/investigator/dashboard');
+        else if (data.user.role === 'legal_advisor') navigate('/legal/dashboard');
+      }, 1200);
+    } catch (error) {
       setIsError(true);
-      setMessage('Network error. Please try again.');
+      setMessage(error.response?.data?.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }

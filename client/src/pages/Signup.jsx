@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lock, Mail, User, Shield, ChevronRight, Eye, EyeOff, Activity } from 'lucide-react';
 import { NetworkBackground } from '../components/NetworkBackground';
-import { API_URL } from '../config/api';
+import api from '../config/axios';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -28,24 +28,13 @@ const Signup = () => {
     setIsError(false);
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsError(false);
-        setMessage('OTP sent to your email! Please verify below.');
-        setStep('otp');
-      } else {
-        setIsError(true);
-        setMessage(data.message || 'Registration failed');
-      }
-    } catch {
+      const response = await api.post('/auth/register', formData);
+      setIsError(false);
+      setMessage('OTP sent to your email! Please verify below.');
+      setStep('otp');
+    } catch (error) {
       setIsError(true);
-      setMessage('Network error. Please try again.');
+      setMessage(error.response?.data?.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -58,24 +47,15 @@ const Signup = () => {
     setIsError(false);
 
     try {
-      const response = await fetch(`${API_URL}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, otp }),
-      });
-      const data = await response.json();
+      const response = await api.post('/auth/verify-otp', { email: formData.email, otp });
+      const data = response.data;
 
-      if (response.ok) {
-        setIsError(false);
-        setMessage('Account created successfully! Redirecting to login...');
-        setTimeout(() => navigate('/login'), 2000);
-      } else {
-        setIsError(true);
-        setMessage(data.message || 'OTP verification failed');
-      }
-    } catch {
+      setIsError(false);
+      setMessage('Account created successfully! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (error) {
       setIsError(true);
-      setMessage('Network error. Please try again.');
+      setMessage(error.response?.data?.message || 'OTP verification failed');
     } finally {
       setLoading(false);
     }
